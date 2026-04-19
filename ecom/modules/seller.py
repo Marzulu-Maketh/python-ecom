@@ -17,17 +17,25 @@ class Seller(User):
     def sell_item(self, buyer, item_id, quantity, sub_total):
         catalogue = self._catalogue[item_id]
 
-        item_ordered = {"Buyer Name": buyer.get_name, "Item ID":item_id, "Quantity":quantity, "Sub Total":sub_total}
+        item_ordered = {"buyer_name": buyer.get_name, "item_id":item_id, "quantity":quantity, "sub_total":sub_total}
         
         self._orders.append(item_ordered)
 
         catalogue["stock"] = catalogue["stock"] - quantity
+        item_name = catalogue['name']
+        item_price = catalogue['price']
 
         if (catalogue["stock"] == 0):
-            print(f'{catalogue['name']} has been sold out')
+            print(f'{item_name} has been sold out')
             self._catalogue.pop(item_id)
         
         self._catalogue[item_id] = catalogue
+
+        item = {"item_name": item_name, "item_id":item_id, "quantity":quantity, "price":item_price, "sub_total":sub_total, "seller_uuid":self.get_id}
+
+        buyer.add_to_ordered_list(item)
+
+        buyer.eliminate_wishlist(item)
 
         print("Item Ordered Successfully")
 
